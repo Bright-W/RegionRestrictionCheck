@@ -65,7 +65,7 @@ countRunTimes() {
     TodayRunTimes=$(cat "${count_file}" | tail -3 | head -n 1 | awk '{print $5}')
     TotalRunTimes=$(($(cat "${count_file}" | tail -3 | head -n 1 | awk '{print $7}') + 2527395))
 }
-countRunTimes
+#countRunTimes
 
 checkOS() {
     ifTermux=$(echo $PWD | grep termux)
@@ -177,12 +177,6 @@ checkDependencies() {
 }
 checkDependencies
 
-local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
-local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}' <<<"${local_ipv4}")
-local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
-local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}' <<<"${local_ipv6}")
-local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | cut -f1 -d"," | cut -f4 -d '"')
-local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | cut -f1 -d"," | cut -f4 -d '"')
 
 ShowRegion() {
     echo -e "${Font_Yellow} ---${1}---${Font_Suffix}"
@@ -1917,15 +1911,15 @@ function MediaUnlockTest_NetflixCDN() {
 
     local CDN_ISP=$(curl $useNIC $xForward --user-agent "${UA_Browser}" -s --max-time 20 "https://api.ip.sb/geoip/$CDNIP" | python -m json.tool 2>/dev/null | grep 'isp' | cut -f4 -d'"')
     local iata=$(echo $CDNAddr | cut -f3 -d"-" | sed 's/.\{3\}$//' | tr [:lower:] [:upper:])
-    local isIataFound1=$(curl -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode.txt" | grep $iata)
-    local isIataFound2=$(curl -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode2.txt" | grep $iata)
+    local isIataFound1=$(curl -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode.txt" | grep $iata)
+    local isIataFound2=$(curl -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode2.txt" | grep $iata)
 
     if [ -n "$isIataFound1" ]; then
-        local lineNo=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode.txt" | cut -f3 -d"|" | sed -n "/${iata}/=")
-        local location=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode.txt" | awk "NR==${lineNo}" | cut -f1 -d"|" | sed -e 's/^[[:space:]]*//')
+        local lineNo=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode.txt" | cut -f3 -d"|" | sed -n "/${iata}/=")
+        local location=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode.txt" | awk "NR==${lineNo}" | cut -f1 -d"|" | sed -e 's/^[[:space:]]*//')
     elif [ -z "$isIataFound1" ] && [ -n "$isIataFound2" ]; then
-        local lineNo=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode2.txt" | awk '{print $1}' | sed -n "/${iata}/=")
-        local location=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/IATACode2.txt" | awk "NR==${lineNo}" | cut -f2 -d"," | sed -e 's/^[[:space:]]*//' | tr [:upper:] [:lower:] | sed 's/\b[a-z]/\U&/g')
+        local lineNo=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode2.txt" | awk '{print $1}' | sed -n "/${iata}/=")
+        local location=$(curl $useNIC $xForward -s --max-time 10 "https://raw.githubusercontent.com/bright-w/RegionRestrictionCheck/main/reference/IATACode2.txt" | awk "NR==${lineNo}" | cut -f2 -d"," | sed -e 's/^[[:space:]]*//' | tr [:upper:] [:lower:] | sed 's/\b[a-z]/\U&/g')
     fi
 
     if [ -n "$location" ] && [[ "$CDN_ISP" == "Netflix Streaming Services" ]]; then
@@ -2929,6 +2923,9 @@ function CheckV4() {
             isv4=0
             echo -e "${Font_SkyBlue}User Choose to Test Only IPv6 Results, Skipping IPv4 Testing...${Font_Suffix}"
         else
+            local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
+            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}'<<<"${local_ipv4}")
+            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | cut -f1 -d"," | cut -f4 -d '"')
             echo -e " ${Font_SkyBlue}** Checking Results Under IPv4${Font_Suffix} "
             echo "--------------------------------"
             echo -e " ${Font_SkyBlue}** Your Network Provider: ${local_isp4} (${local_ipv4_asterisk})${Font_Suffix} "
@@ -2947,6 +2944,9 @@ function CheckV4() {
             isv4=0
             echo -e "${Font_SkyBlue}用户选择只检测IPv6结果，跳过IPv4检测...${Font_Suffix}"
         else
+            local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
+            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}'<<<"${local_ipv4}")
+            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | cut -f1 -d"," | cut -f4 -d '"')
             echo -e " ${Font_SkyBlue}** 正在测试IPv4解锁情况${Font_Suffix} "
             echo "--------------------------------"
             echo -e " ${Font_SkyBlue}** 您的网络为: ${local_isp4} (${local_ipv4_asterisk})${Font_Suffix} "
@@ -2969,6 +2969,9 @@ function CheckV6() {
             isv6=0
             echo -e "${Font_SkyBlue}User Choose to Test Only IPv4 Results, Skipping IPv6 Testing...${Font_Suffix}"
         else
+            local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
+            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}'<<<"${local_ipv6}")
+            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | cut -f1 -d"," | cut -f4 -d '"')
             check6_1=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.google.com)
             check6_2=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.ip.sb)
             if [[ "$check6_1" -ne "000" ]] || [[ "$check6_2" -ne "000" ]]; then
@@ -2990,6 +2993,9 @@ function CheckV6() {
             isv6=0
             echo -e "${Font_SkyBlue}用户选择只检测IPv4结果，跳过IPv6检测...${Font_Suffix}"
         else
+            local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
+            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}'<<<"${local_ipv6}")
+            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | cut -f1 -d"," | cut -f4 -d '"')
             check6_1=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.google.com)
             check6_2=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.ip.sb)
             if [[ "$check6_1" -ne "000" ]] || [[ "$check6_2" -ne "000" ]]; then
@@ -3009,6 +3015,7 @@ function CheckV6() {
 }
 
 function Goodbye() {
+    return;
     if [ "${num}" == 1 ]; then
         ADN=TW
     else
@@ -3078,6 +3085,14 @@ function Start() {
         echo -e "${Font_SkyBlue}Input Number  [7]: [ Multination + Oceania ]${Font_Suffix}"
         echo -e "${Font_SkyBlue}Input Number  [0]: [ Multination Only ]${Font_Suffix}"
         echo -e "${Font_SkyBlue}Input Number [99]: [ Sport Platforms ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [11]：[ Netflix Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [12]：[ Disney+ Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [13]：[ Prime Video Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [14]：[ Hulu US Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [15]：[ HBO Max Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [16]：[ HBO Go Asia Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [17]：[ Star+ Only ]${Font_Suffix}"
+        echo -e "${Font_SkyBlue}Input Number [18]：[ LineTV Only ]${Font_Suffix}"
         read -p "Please Input the Correct Number or Press ENTER:" num
     else
         echo -e "${Font_Blue}请选择检测项目，直接按回车将进行全区域检测${Font_Suffix}"
@@ -3090,7 +3105,14 @@ function Start() {
         echo -e "${Font_SkyBlue}输入数字  [7]: [跨国平台+大洋洲平台]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字  [0]: [   只进行跨国平台  ]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字 [99]: [   体育直播平台    ]检测${Font_Suffix}"
-        echo -e "${Font_Purple}输入数字 [69]: [   广告推广投放    ]咨询${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [11]：[  只进行Netflix ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [12]：[  只进行Disney+ ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [13]：[  只进行Prime Video ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [14]：[  只进行Hulu US ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [15]：[  只进行HBO Max ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [16]：[  只进行HBO Go Asia ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [17]：[  只进行Star+ ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字 [18]：[  只进行LineTV ]检测${Font_Suffix}"
         read -p "请输入正确数字或直接按回车:" num
     fi
 }
@@ -3240,7 +3262,127 @@ function RunScript() {
             echo -e "${Font_Red}*${Font_Suffix} 请联系：@reidschat_bot ${Font_Red}*${Font_Suffix}"
             echo -e "${Font_Red}*                        *${Font_Suffix}"
             echo -e "${Font_Red}**************************${Font_Suffix}"
+        
+        elif [[ "$num" -eq 11 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ Netflix IPv4 ]============"  
+            MediaUnlockTest_Netflix 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ Netflix IPv6 ]============"  
+            MediaUnlockTest_Netflix 6
+          fi  
+          Goodbye
 
+        elif [[ "$num" -eq 12 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ Disney+ IPv4 ]============"  
+            MediaUnlockTest_DisneyPlus 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ Disney+ IPv6 ]============"  
+            MediaUnlockTest_DisneyPlus 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 13 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ Prime Video IPv4 ]============"  
+            MediaUnlockTest_PrimeVideo_Region 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ Prime Video IPv6 ]============"  
+            MediaUnlockTest_PrimeVideo_Region 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 14 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ Hulu US IPv4 ]============"  
+            MediaUnlockTest_HuluUS 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ Hulu US IPv6 ]============"  
+            MediaUnlockTest_HuluUS 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 15 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ HBO Max IPv4 ]============"  
+            MediaUnlockTest_HBOMax 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ HBO Max IPv6 ]============"  
+            MediaUnlockTest_HBOMax 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 16 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ HBO Go Asia IPv4 ]============"  
+            MediaUnlockTest_HBOGO_ASIA 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ HBO Go Asia IPv6 ]============"  
+            MediaUnlockTest_HBOGO_ASIA 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 17 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ Star+ IPv4 ]============"  
+            MediaUnlockTest_StarPlus 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ Star+ IPv6 ]============"  
+            MediaUnlockTest_StarPlus 6
+          fi  
+          Goodbye
+
+        elif [[ "$num" -eq 18 ]]; then
+          clear
+          ScriptTitle
+          CheckV4
+          if [[ "$isv4" -eq 1 ]];then
+            echo "============[ LineTV IPv4 ]============"  
+            MediaUnlockTest_LineTV.TW 4
+          fi
+          CheckV6
+          if  [[ "$isv6" -eq 1 ]];then
+            echo "============[ LineTV IPv6 ]============"  
+            MediaUnlockTest_LineTV.TW 6
+          fi  
+          Goodbye
+      
         else
             echo -e "${Font_Red}请重新执行脚本并输入正确号码${Font_Suffix}"
             echo -e "${Font_Red}Please Re-run the Script with Correct Number Input${Font_Suffix}"
