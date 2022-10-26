@@ -764,12 +764,12 @@ function MediaUnlockTest_HBOMax() {
 
 function MediaUnlockTest_Channel4() {
     echo -n -e " Channel 4:\t\t\t\t->\c"
-    local result=$(curl $useNIC $xForward -${1} ${ssll} -s --max-time 10 "https://ais.channel4.com/simulcast/C4?client=c4" | grep 'status' | cut -f2 -d'"')
+    local result=$(curl $useNIC $xForward -${1} ${ssll} -fsL --write-out %{http_code} --output /dev/null --max-time 10 "https://www.channel4.com/simulcast/channels/C4")
 
-    if [[ "$result" == "ERROR" ]]; then
+    if [[ "$result" == "403" ]]; then
         echo -n -e "\r Channel 4:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
         return
-    elif [[ "$result" == "OK" ]]; then
+    elif [[ "$result" == "200" ]]; then
         echo -n -e "\r Channel 4:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
         return
     fi
@@ -2589,7 +2589,7 @@ function MediaUnlockTest_Channel7() {
 
 function MediaUnlockTest_Channel10() {
     echo -n -e " Channel 10:\t\t\t\t->\c"
-    local tmpresult=$(curl $useNIC $xForward -${1} ${ssll} -sL --max-time 10 "https://10play.com.au/geo-web" 2>&1)
+    local tmpresult=$(curl $useNIC $xForward -${1} ${ssll} -sL --max-time 10 "https://e410fasadvz.global.ssl.fastly.net/geo" 2>&1)
     if [[ "$tmpresult" == "curl"* ]] && [[ "$1" == "6" ]]; then
         echo -n -e "\r Channel 10:\t\t\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
     elif [[ "$tmpresult" == "curl"* ]]; then
@@ -2812,7 +2812,7 @@ function TW_UnlockTest() {
     MediaUnlockTest_Catchplay ${1}
     MediaUnlockTest_HBOGO_ASIA ${1}
     MediaUnlockTest_BahamutAnime ${1}
-    MediaUnlockTest_ElevenSportsTW ${1}
+    #MediaUnlockTest_ElevenSportsTW ${1}
     MediaUnlockTest_BilibiliTW ${1}
     echo "======================================="
 }
@@ -2909,7 +2909,7 @@ function Sport_UnlockTest() {
     MediaUnlockTest_FuboTV ${1}
     MediaUnlockTest_MolaTV ${1}
     MediaUnlockTest_SetantaSports ${1}
-    MediaUnlockTest_ElevenSportsTW ${1}
+    #MediaUnlockTest_ElevenSportsTW ${1}
     MediaUnlockTest_OptusSports ${1}
     MediaUnlockTest_BeinConnect ${1}
     MediaUnlockTest_EurosportRO ${1}
@@ -3018,6 +3018,8 @@ function Goodbye() {
     return;
     if [ "${num}" == 1 ]; then
         ADN=TW
+	elif [ "${num}" == 4 ]; then
+		AND=US
     else
         ADN=$(echo $(($RANDOM % 2 + 1)))
     fi
