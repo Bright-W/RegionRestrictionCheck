@@ -177,6 +177,12 @@ checkDependencies() {
 }
 checkDependencies
 
+#local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
+#local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}' <<<"${local_ipv4}")
+#local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
+#local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}' <<<"${local_ipv6}")
+#local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | grep organization | cut -f4 -d '"')
+#local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | grep organization | cut -f4 -d '"')
 
 ShowRegion() {
     echo -e "${Font_Yellow} ---${1}---${Font_Suffix}"
@@ -2643,7 +2649,7 @@ function MediaUnlockTest_Spotify() {
     if [ "$tmpresult" = "000" ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
-    elif [ "$StatusCode" = "320" ]; then
+    elif [ "$StatusCode" = "320" ] || [ "$StatusCode" = "120" ]; then
         echo -n -e "\r Spotify Registration:\t\t\t${Font_Red}No${Font_Suffix}\n"
         return
     elif [ "$StatusCode" = "311" ] && [ "$isLaunched" = "true" ]; then
@@ -3171,7 +3177,7 @@ function EU_UnlockTest() {
     MediaUnlockTest_NLZIET ${1}
     MediaUnlockTest_videoland ${1}
     MediaUnlockTest_NPO_Start_Plus ${1}
-    # ShowRegion ES
+    ShowRegion ES
     # MediaUnlockTest_HBO_Spain ${1}
     MediaUnlockTest_PANTAYA ${1}
     ShowRegion IT
@@ -3330,8 +3336,8 @@ function CheckV4() {
             echo -e "${Font_SkyBlue}User Choose to Test Only IPv6 Results, Skipping IPv4 Testing...${Font_Suffix}"
         else
             local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
-            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}'<<<"${local_ipv4}")
-            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | cut -f1 -d"," | cut -f4 -d '"')
+            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}' <<<"${local_ipv4}")
+            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | grep organization | cut -f4 -d '"')
             echo -e " ${Font_SkyBlue}** Checking Results Under IPv4${Font_Suffix} "
             echo "--------------------------------"
             echo -e " ${Font_SkyBlue}** Your Network Provider: ${local_isp4} (${local_ipv4_asterisk})${Font_Suffix} "
@@ -3351,8 +3357,8 @@ function CheckV4() {
             echo -e "${Font_SkyBlue}用户选择只检测IPv6结果，跳过IPv4检测...${Font_Suffix}"
         else
             local_ipv4=$(curl $useNIC -4 -s --max-time 10 api64.ipify.org)
-            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}'<<<"${local_ipv4}")
-            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | cut -f1 -d"," | cut -f4 -d '"')
+            local_ipv4_asterisk=$(awk -F"." '{print $1"."$2".*.*"}' <<<"${local_ipv4}")
+            local_isp4=$(curl $useNIC -s -4 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv4}" | grep organization | cut -f4 -d '"')
             echo -e " ${Font_SkyBlue}** 正在测试IPv4解锁情况${Font_Suffix} "
             echo "--------------------------------"
             echo -e " ${Font_SkyBlue}** 您的网络为: ${local_isp4} (${local_ipv4_asterisk})${Font_Suffix} "
@@ -3376,8 +3382,8 @@ function CheckV6() {
             echo -e "${Font_SkyBlue}User Choose to Test Only IPv4 Results, Skipping IPv6 Testing...${Font_Suffix}"
         else
             local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
-            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}'<<<"${local_ipv6}")
-            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | cut -f1 -d"," | cut -f4 -d '"')
+            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}' <<<"${local_ipv6}")
+            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | grep organization | cut -f4 -d '"')
             check6_1=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.google.com)
             check6_2=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.ip.sb)
             if [[ "$check6_1" -ne "000" ]] || [[ "$check6_2" -ne "000" ]]; then
@@ -3400,8 +3406,8 @@ function CheckV6() {
             echo -e "${Font_SkyBlue}用户选择只检测IPv4结果，跳过IPv6检测...${Font_Suffix}"
         else
             local_ipv6=$(curl $useNIC -6 -s --max-time 20 api64.ipify.org)
-            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}'<<<"${local_ipv6}")
-            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | cut -f1 -d"," | cut -f4 -d '"')
+            local_ipv6_asterisk=$(awk -F":" '{print $1":"$2":"$3":*:*"}' <<<"${local_ipv6}")
+            local_isp6=$(curl $useNIC -s -6 --max-time 10 --user-agent "${UA_Browser}" "https://api.ip.sb/geoip/${local_ipv6}" | grep organization | cut -f4 -d '"')
             check6_1=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.google.com)
             check6_2=$(curl $useNIC -fsL --write-out %{http_code} --output /dev/null --max-time 10 ipv6.ip.sb)
             if [[ "$check6_1" -ne "000" ]] || [[ "$check6_2" -ne "000" ]]; then
@@ -3427,8 +3433,7 @@ function Goodbye() {
 	elif [ "${num}" == 4 ]; then
 		AND=US
     else
-        #ADN=$(echo $(($RANDOM % 2 + 1)))
-        ADN=BF
+        ADN=$(echo $(($RANDOM % 2 + 1)))
     fi
 
     if [[ "$language" == "e" ]]; then
