@@ -3037,6 +3037,111 @@ function MediaUnlockTest_MathsSpot() {
     fi
 }
 
+function MediaUnblockTest_BGlobalSEA() {
+    local result=$(curl $useNIC $xForward --user-agent "${UA_Browser}" -${1} -fsSL --max-time 10 "https://api.bilibili.tv/intl/gateway/web/playurl?s_locale=en_US&platform=web&ep_id=347666" 2>&1)
+    local result1="$(echo "${result}" | python -m json.tool 2>/dev/null | grep '"code"' | head -1 | awk '{print $2}' | cut -d ',' -f1)"
+    if [[ "$result" == "curl"* ]] && [[ "$1" == "6" ]]; then
+        echo -n -e "\r B-Global SouthEastAsia:\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
+        return
+    elif [[ "$result" == "curl"* ]]; then
+        echo -n -e "\r B-Global SouthEastAsia:\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    if [[ "$result1" == "0" ]]; then
+        echo -n -e "\r B-Global SouthEastAsia:\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r B-Global SouthEastAsia:\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    fi
+        
+    echo -n -e "\r B-Global SouthEastAsia:\t\t${Font_Red}Failed${Font_Suffix}\n"
+}
+
+function MediaUnblockTest_BGlobalTH() {
+    local result=$(curl $useNIC $xForward --user-agent "${UA_Browser}" -${1} -fsSL --max-time 10 "https://api.bilibili.tv/intl/gateway/web/playurl?s_locale=en_US&platform=web&ep_id=10077726" 2>&1)
+    local result1="$(echo "${result}" | python -m json.tool 2>/dev/null | grep '"code"' | head -1 | awk '{print $2}' | cut -d ',' -f1)"
+    if [[ "$result" == "curl"* ]] && [[ "$1" == "6" ]]; then
+        echo -n -e "\r B-Global Thailand Only:\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
+        return
+    elif [[ "$result" == "curl"* ]]; then
+        echo -n -e "\r B-Global Thailand Only:\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    if [[ "$result1" == "0" ]]; then
+        echo -n -e "\r B-Global Thailand Only:\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r B-Global Thailand Only:\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    fi
+        
+    echo -n -e "\r B-Global Thailand Only:\t\t${Font_Red}Failed${Font_Suffix}\n"
+}
+
+function MediaUnblockTest_BGlobalID() {
+    local result=$(curl $useNIC $xForward --user-agent "${UA_Browser}" -${1} -fsSL --max-time 10 "https://api.bilibili.tv/intl/gateway/web/playurl?s_locale=en_US&platform=web&ep_id=11130043" 2>&1)
+    local result1="$(echo "${result}" | python -m json.tool 2>/dev/null | grep '"code"' | head -1 | awk '{print $2}' | cut -d ',' -f1)"
+    if [[ "$result" == "curl"* ]] && [[ "$1" == "6" ]]; then
+        echo -n -e "\r B-Global Indonesia Only:\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
+        return
+    elif [[ "$result" == "curl"* ]]; then
+        echo -n -e "\r B-Global Indonesia Only:\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    if [[ "$result1" == "0" ]]; then
+        echo -n -e "\r B-Global Indonesia Only:\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r B-Global Indonesia Only:\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    fi
+        
+    echo -n -e "\r B-Global Indonesia Only:\t\t${Font_Red}Failed${Font_Suffix}\n"
+}
+
+function MediaUnblockTest_BGlobalVN() {
+    local result=$(curl $useNIC $xForward --user-agent "${UA_Browser}" -${1} -fsSL --max-time 10 "https://api.bilibili.tv/intl/gateway/web/playurl?s_locale=en_US&platform=web&ep_id=11405745" 2>&1)
+    local result1="$(echo "${result}" | python -m json.tool 2>/dev/null | grep '"code"' | head -1 | awk '{print $2}' | cut -d ',' -f1)"
+    if [[ "$result" == "curl"* ]] && [[ "$1" == "6" ]]; then
+        echo -n -e "\r B-Global Việt Nam Only:\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
+        return
+    elif [[ "$result" == "curl"* ]]; then
+        echo -n -e "\r B-Global Việt Nam Only:\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    if [[ "$result1" == "0" ]]; then
+        echo -n -e "\r B-Global Việt Nam Only:\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    else
+        echo -n -e "\r B-Global Việt Nam Only:\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    fi
+        
+    echo -n -e "\r B-Global Việt Nam Only:\t\t${Font_Red}Failed${Font_Suffix}\n"
+}
+
+function MediaUnlockTest_AISPlay() {
+    local result=$(curl $useNIC $xForward -${1} -sSLI --max-time 10 "https://49-231-37-237-rewriter.ais-vidnt.com/ais/play/origin/VOD/playlist/ais-yMzNH1-bGUxc/index.m3u8" 2>&1)
+    if [[ "$result" == "curl"* ]] && [[ "$1" == "6" ]]; then
+        echo -n -e "\r AIS Play:\t\t\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
+        return
+    elif [[ "$result" == "curl"* ]]; then
+        echo -n -e "\r AIS Play:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+        return
+    fi
+    local result1="$(echo "${result}" | grep 'X-Geo-Protection-System-Status' | awk '{print $2}' )"
+    if [[ "$result1" == *"ALLOW"* ]]; then
+        echo -n -e "\r AIS Play:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+        return
+    elif [[ "$result1" == *"BLOCK"* ]]; then
+        echo -n -e "\r AIS Play:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+        return
+    fi
+        
+    echo -n -e "\r AIS Play:\t\t\t\t${Font_Red}Failed${Font_Suffix}\n"
+}
+
 function echo_Result() {
     for((i=0;i<${#array[@]};i++)) 
     do
@@ -3358,6 +3463,41 @@ function KR_UnlockTest() {
     echo "======================================="
 }
 
+function SEA_UnlockTest(){
+    echo "==========[ SouthEastAsia ]============"
+    local result=$(
+    MediaUnlockTest_HBOGO_ASIA ${1} &
+    MediaUnblockTest_BGlobalSEA ${1} &
+    )
+    wait
+    local array=("HBO GO Asia:" "B-Global SouthEastAsia:") 
+    echo_Result ${result} ${array}
+    # ShowRegion SG
+    ShowRegion TH
+    local result=$(
+    MediaUnlockTest_AISPlay ${1} &
+    MediaUnblockTest_BGlobalTH ${1} &
+    )
+    wait
+    local array=("AIS Play" "B-Global Thailand Only") 
+    echo_Result ${result} ${array}
+    ShowRegion ID
+    local result=$(
+    MediaUnblockTest_BGlobalID ${1} &
+    )
+    wait
+    local array=("B-Global Indonesia Only") 
+    echo_Result ${result} ${array}
+    ShowRegion VN
+    local result=$(
+    MediaUnblockTest_BGlobalVN ${1} &
+    )
+    wait
+    local array=("B-Global Việt Nam Only") 
+    echo_Result ${result} ${array}
+    echo "======================================="
+}
+
 function Sport_UnlockTest() {
     echo "===============[ Sport ]==============="
     local result=$(
@@ -3623,6 +3763,7 @@ function Start() {
         echo -e "${Font_SkyBlue}输入数字  [6]: [ 跨国平台+欧洲平台 ]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字  [7]: [跨国平台+大洋洲平台]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字  [8]: [ 跨国平台+韩国平台 ]检测${Font_Suffix}"
+        echo -e "${Font_SkyBlue}输入数字  [9]: [跨国平台+东南亚平台]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字  [0]: [   只进行跨国平台  ]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字 [99]: [   体育直播平台    ]检测${Font_Suffix}"
         echo -e "${Font_SkyBlue}输入数字 [11]：[  只进行Netflix ]检测${Font_Suffix}"
@@ -3757,6 +3898,21 @@ function RunScript() {
             if [[ "$isv6" -eq 1 ]]; then
                 Global_UnlockTest 6
                 KR_UnlockTest 6
+            fi
+            Goodbye
+
+        elif [[ "$num" -eq 9 ]]; then
+            clear
+            ScriptTitle
+            CheckV4
+            if [[ "$isv4" -eq 1 ]]; then
+                Global_UnlockTest 4
+                SEA_UnlockTest 4
+            fi
+            CheckV6
+            if [[ "$isv6" -eq 1 ]]; then
+                Global_UnlockTest 6
+                SEA_UnlockTest 6
             fi
             Goodbye
 
