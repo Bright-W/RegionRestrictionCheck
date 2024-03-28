@@ -403,8 +403,8 @@ function MediaUnlockTest_BBCiPLAYER() {
 }
 
 function MediaUnlockTest_Netflix() {
-    local tmpresult1=$(curl $useNIC $usePROXY $xForward -${1} --user-agent "${UA_Browser}" -fsL  --max-time 10 "https://www.netflix.com/title/81280792" 2>&1)
-    local tmpresult2=$(curl $useNIC $usePROXY $xForward -${1} --user-agent "${UA_Browser}" -fsL  --max-time 10 "https://www.netflix.com/title/70143836" 2>&1)
+    local tmpresult1=$(curl $useNIC $usePROXY $xForward -${1} -fsL  --max-time 10 "https://www.netflix.com/title/81280792" 2>&1)
+    local tmpresult2=$(curl $useNIC $usePROXY $xForward -${1} -fsL  --max-time 10 "https://www.netflix.com/title/70143836" 2>&1)
     local result1=$(echo $tmpresult1 | grep -oP '"isPlayable":\K(true|false)')
     local result2=$(echo $tmpresult2 | grep -oP '"isPlayable":\K(true|false)')
     
@@ -534,7 +534,7 @@ function MediaUnlockTest_MyTVSuper() {
 
 function MediaUnlockTest_NowE() {
 
-    local result=$(curl $useNIC $usePROXY $xForward -${1} ${ssll} -fsL --write-out %{http_code} --output /dev/null --max-time 10 'https://ewcdn04.nowe.com/session/16-5-d5e3774-2106035143489306129/Content/DASH_VOS3/Live/channel(VOS_CH099)/manifest.mpd?token=7b7ede10fb9871b60f5f437b46dce761_1709310300' -H 'host: ewcdn04.nowe.com' -H 'connection: keep-alive' -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"' -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-ch-ua-mobile: ?0' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0' -H 'accept: */*' -H 'sec-fetch-site: same-site' -H 'sec-fetch-mode: cors' -H 'sec-fetch-dest: empty' -H 'origin: https://www.nowe.com' -H 'referer: https://www.nowe.com/')
+    local result=$(curl $useNIC $usePROXY $xForward -${1} ${ssll} -fsL --write-out %{http_code} --output /dev/null --max-time 10 'https://ewcdn110.nowe.com/session/16-5-560c3a8-2106035143489306129/Content/DASH_VOS3/VOD/16695/17618/902c7694-1075-4c29-b012-69ede1891bcd/f076ed7d-afc3-7511-64e7-63f765b4f741/stream_1/init.m4i' -H 'host: ewcdn110.nowe.com' -H 'connection: keep-alive' -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' -H 'sec-ch-ua-mobile: ?0' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' -H 'sec-ch-ua-platform: "Windows"' -H 'accept: */*' -H 'origin: https://www.nowe.com' -H 'sec-fetch-site: same-site' -H 'sec-fetch-mode: cors' -H 'sec-fetch-dest: empty' -H 'referer: https://www.nowe.com/' -H 'accept-language: en')
 
     if [[ "$result" == "200" ]]; then
         echo -n -e "\r Now E:\t\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
@@ -2807,7 +2807,8 @@ function MediaUnlockTest_CoupangPlay() {
 }
 
 function MediaUnlockTest_NaverTV() {
-    local tmpresult=$(curl $useNIC $usePROXY $xForward -${1} --user-agent "${UA_Browser}" -fSsL --max-time 10 "https://tv.naver.com/v/31030608" 2>&1)
+    local timestamp=$(date +%s%3N)
+    local tmpresult=$(curl $useNIC $usePROXY $xForward -${1} -s --max-time 10 "https://apis.naver.com/now_web2/now_web_api/v1/clips/31030608/meta-info?msgpad=${timestamp}&md=SCrXvFnuzUU4qaZbxG%2BVhc0gjCQ%3D" -H 'host: apis.naver.com' -H 'connection: keep-alive' -H 'sec-ch-ua: "Google Chrome";v="123", "Not:A-Brand";v="8", "Chromium";v="123"' -H 'accept: application/json, text/plain, */*' -H 'sec-ch-ua-mobile: ?0' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36' -H 'sec-ch-ua-platform: "Windows"' -H 'origin: https://tv.naver.com' -H 'sec-fetch-site: same-site' -H 'sec-fetch-mode: cors' -H 'sec-fetch-dest: empty' -H 'referer: https://tv.naver.com/v/31030608' -H 'accept-language: en,zh-CN;q=0.9,zh;q=0.8' 2>&1)
     if [[ "$tmpresult" == "curl"* ]] && [ "$1" == "6" ]; then
         echo -n -e "\r Naver TV:\t\t\t\t${Font_Red}IPv6 Not Support${Font_Suffix}\n"
         return
@@ -2815,11 +2816,11 @@ function MediaUnlockTest_NaverTV() {
         echo -n -e "\r Naver TV:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
         return
     fi
-    local result1=$(echo "$tmpresult" | grep 'nation_error' | grep 'display:none' )
-    if [ -z "$result1" ]; then
-        echo -n -e "\r Naver TV:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
-    else
+    local result=$(echo "$tmpresult" | python -m json.tool 2>/dev/null | grep ctry | cut -f4 -d'"')
+    if [[ "$result" == "KR" ]]; then
         echo -n -e "\r Naver TV:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+    else
+        echo -n -e "\r Naver TV:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     fi
 }
 
@@ -2854,6 +2855,19 @@ function MediaUnlockTest_KBSDomestic() {
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
     else
         echo -n -e "\r KBS Domestic:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+    fi
+}
+
+function MediaUnlockTest_Watcha() {
+    local result=$(curl $useNIC $usePROXY $xForward -${1} -fsL --write-out %{http_code} --output /dev/null --max-time 10 'https://watcha.com/' -H 'host: watcha.com' -H 'connection: keep-alive' -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"' -H 'sec-ch-ua-mobile: ?0' -H 'sec-ch-ua-platform: "Windows"' -H 'upgrade-insecure-requests: 1' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0' -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' -H 'sec-fetch-site: none' -H 'sec-fetch-mode: navigate' -H 'sec-fetch-user: ?1' -H 'sec-fetch-dest: document' -H 'accept-language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6' 2>&1)
+    if [ "$result" = "000" ]; then
+        echo -n -e "\r WATCHA:\t\t\t\t${Font_Red}Failed (Network Connection)${Font_Suffix}\n"
+    elif [ "$result" = "200" ]; then
+        echo -n -e "\r WATCHA:\t\t\t\t${Font_Green}Yes${Font_Suffix}\n"
+    elif [ "$result" = "451" ]; then
+        echo -n -e "\r WATCHA:\t\t\t\t${Font_Red}No${Font_Suffix}\n"
+    else
+        echo -n -e "\r WATCHA:\t\t\t\t${Font_Red}Failed (Unexpected Result: $result)${Font_Suffix}\n"
     fi
 }
 
@@ -3206,7 +3220,7 @@ function MediaUnlockTest_MeWatch(){
 }
 
 function MediaUnlockTest_trueID(){
-    local tmpresult=$(curl -s $useNIC $usePROXY $xForward -${1} ${ssll} --max-time 10 'https://tv.trueid.net/api/stream/checkedPlay?channelId=nQlqONGyoa4&lang=th&country=th'   -H 'authority: tv.trueid.net'   -H 'accept: application/json, text/plain, */*'   -H 'accept-language: zh-CN,zh;q=0.9'   -H 'authorization: Basic MTM4MDY0NGUwZjFmYjZiMTRjODI4OTRhMGM2ODJkMTQ3ZTAxNWM5ZDoxZmI2YjE0YzgyODk0YTBjNjgyZDE0N2UwMTVjOWQ='   -H 'cache-control: no-cache'   -H 'cookie: 5185546544a5daed75782b85be6cffd9=28ce75e1c388316c82f2961b3d3efc42; visid_incap_2624018=NRohTNkSTby8kADOzdHzqBejimUAAAAAQUIPAAAAAADmCJPTW89qFxekZG4O9yMx; incap_ses_257_2624018=89YDAN8bBHiJyHq71gyRAxejimUAAAAA2S8jpDudRGFtx30x4MihXQ==; _gid=GA1.2.120310574.1703584558; visid_incap_2679318=uiazKRp0Q36sf9h/+dqSyCCjimUAAAAAQUIPAAAAAABzz+3jjhslSLwbfUYdyF1t; nlbi_2679318=GvspQ+MV0kFLB1RcYwCYNQAAAAAix592380HiAHUn7OLO6jc; incap_ses_257_2679318=Gvc4AqMlmgtQzHq71gyRAyCjimUAAAAARKQKXmHZujfY7NJZRFUb4A==; _gcl_au=1.1.1031413749.1703584560; __gads=ID=672ef2a3053a99c1:T=1703584545:RT=1703584545:S=ALNI_MaxuM0jsUxFGyz6wa1W7GH4Gwz3CA; __gpi=UID=00000cc34149ff9a:T=1703584545:RT=1703584545:S=ALNI_MbJQgassMuujyHRoXFJDZKFw2g1Sw; sessioncenter=s%3A3XuDVmHGdpluo5wOtcTN5eJzeBaUCHrv.dfWevF34GPz6wgYVoXozrF2JyJTo7IqDgW%2F99efIJps; _cbclose=1; _cbclose26068=1; _uid26068=FA9B6484.1; _ctout26068=1; verify=test; _cc_id=483af3c15f2d5ac5544e3ae6449b9b2c; panoramaId_expiry=1704189350238; panoramaId=64f308a44f1b49cdc86d9d24b06c185ca02cf09a9f00eb6f1978c4ab15bcb870; panoramaIdType=panoDevice; _fbp=fb.1.1703584564048.498517901; _tt_enable_cookie=1; _ttp=e9e7H7NctWhVW4CMOymT54bseo-; __lt__cid=a9df798b-301a-4b88-b849-625e52ed5c31; __lt__sid=96c37b29-2e76cf89; afUserId=29409b73-b13f-40a8-9474-d8bf108fa108-p; AF_SYNC=1703584568452; OptanonConsent=isIABGlobal=false&datestamp=Tue+Dec+26+2023+17%3A56%3A08+GMT%2B0800+(%E4%B8%AD%E5%9B%BD%E6%A0%87%E5%87%86%E6%97%B6%E9%97%B4)&version=6.13.0&hosts=&landingPath=https%3A%2F%2Ftv.trueid.net%2Fth-th&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1%2CC0005%3A1; cto_bundle=mDzQN19JSXMxUTJmek84TTU3OWFpMGh3WVBGWDkxcDFJdWIwQnRnZVBNdENyYnE0ZElyT1ZrQzIlMkJ0a1Nna3pEblRsSUd6c1VDWFRQNmhxVGZlMUh1OTY5OXY2dklZdUNnQm1PV0FpN3cyZUVWSCUyRiUyRll1QTdCVlRTYkpCUmtVdzlSMmxyY2RTRjhFR0l4S0tnT05zTWI0ZWI1RGclM0QlM0Q; _ga_R05PJC3ZG8=GS1.1.1703584559.1.1.1703584749.60.0.0; visit_time=186; _ga=GA1.2.1702094718.1703584558'   -H 'pragma: no-cache'   -H 'referer: https://tv.trueid.net/th-th'   -H 'sec-ch-ua: "Not_A Brand";v="8", "Chromium";v="120", "Microsoft Edge";v="120"'   -H 'sec-ch-ua-mobile: ?0'   -H 'sec-ch-ua-platform: "Windows"'   -H 'sec-fetch-dest: empty'   -H 'sec-fetch-mode: cors'   -H 'sec-fetch-site: same-origin'   -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0')
+    local tmpresult=$(curl -s $useNIC $usePROXY $xForward -${1} ${ssll} --max-time 10 'https://tv.trueid.net/api/stream/checkedPlay?channelId=nQlqONGyoa4&lang=th&country=th' -H 'host: tv.trueid.net' -H 'connection: keep-alive' -H 'sec-ch-ua: "Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"' -H 'accept: application/json, text/plain, */*' -H 'sec-ch-ua-mobile: ?0' -H 'authorization: Basic NmRjZjlmMDQ1OTM2NGNkODQxMmE2YTVlYmIzNWMwOTA0Mjg2ZGRiNzozNjRjZDg0MTJhNmE1ZWJiMzVjMDkwNDI4NmRkYjc=' -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36' -H 'sec-ch-ua-platform: "Windows"' -H 'sec-fetch-site: same-origin' -H 'sec-fetch-mode: cors' -H 'sec-fetch-dest: empty' -H 'referer: https://tv.trueid.net/th-th' -H 'accept-language: en,zh-CN;q=0.9,zh;q=0.8' --cookie '_gcl_au=1.1.384894514.1709470492; _gid=GA1.2.558866535.1709470493; _gat_gtag_UA_86733131_1=1; _ga_R05PJC3ZG8=GS1.1.1709470492.1.0.1709470492.60.0.0; _hjSessionUser_2589248=eyJpZCI6ImY0Njg4OWJmLWZmNTgtNWY0MS04ZTM3LWIzNWRmNTBkODNkNiIsImNyZWF0ZWQiOjE3MDk0NzA0OTM2MzcsImV4aXN0aW5nIjpmYWxzZX0=; _hjSession_2589248=eyJpZCI6ImViN2I0MzY2LTJjZmEtNDMwYy1hMGJkLWI1ZDA1OWRiZTY3MiIsImMiOjE3MDk0NzA0OTM2MzgsInMiOjAsInIiOjAsInNiIjowLCJzciI6MCwic2UiOjAsImZzIjoxLCJzcCI6MH0=; _clck=1f641pb%7C2%7Cfjr%7C0%7C1523; _clsk=nen7ab%7C1709470495524%7C1%7C1%7Ci.clarity.ms%2Fcollect; sessioncenter=s%3AQYt0qK-39jgK-a5DupxmVAbZduTIt-vV.O0fp3Pu8bXGjlen%2BwJAcYYhx2IwPTo1kN9w%2FeZxDVSM; 5185546544a5daed75782b85be6cffd9=913c5813dc154dd4784a36f72935a0f2; visid_incap_2624018=DCgop1rVShGL6YOZ5ciaHSJz5GUAAAAAQUIPAAAAAABWp30eCPUFgYCWSUntsAwn; incap_ses_573_2624018=VwG/GbFZBDs2GydaurTzByJz5GUAAAAAbzQVfE1rtlf7Fl5cWiJWCw==; _ga=GA1.2.296761207.1709470493; visid_incap_2679318=xBaA+Z13Q8mb94mD8GIkgyRz5GUAAAAAQUIPAAAAAAAbm6QyL2DUzndAMk5cB50l; nlbi_2679318=VbnqGVH0JEI6QC/fYwCYNQAAAAD+U6QYXdjw9QMfleSMmNVF; incap_ses_573_2679318=xseDcXP790sgHSdaurTzByRz5GUAAAAAAUYQtG1/yPWjvHuASR2OQw==')
     local isBlocked=$(echo $tmpresult | grep 'geoblock')
     local isOK=$(echo $tmpresult | grep '"billboardType":"LOADING"')
     if [ -n "$isBlocked" ]; then
@@ -3610,14 +3624,15 @@ function KR_UnlockTest() {
     local result=$(
     MediaUnlockTest_Wavve ${1} &
     MediaUnlockTest_Tving ${1} &
+    MediaUnlockTest_Watcha ${1} &
     MediaUnlockTest_CoupangPlay ${1} &
-    MediaUnlockTest_NaverTV ${1} &
+    #MediaUnlockTest_NaverTV ${1} &
     MediaUnlockTest_Afreeca ${1} &
     MediaUnlockTest_KBSDomestic ${1} &
     #MediaUnlockTest_KOCOWA ${1} &
     )
     wait
-    local array=("Wavve:" "Tving:" "Coupang Play:" "Naver TV:" "Afreeca TV:" "KBS Domestic:") 
+    local array=("Wavve:" "Tving:" "WATCHA:" "Coupang Play:" "Afreeca TV:" "KBS Domestic:") 
     echo_Result ${result} ${array}
     echo "======================================="
 }
@@ -3867,7 +3882,6 @@ function Goodbye() {
         echo -e "${Font_Yellow}检测脚本当天运行次数: ${TodayRunTimes}; 共计运行次数: ${TotalRunTimes} ${Font_Suffix}"
         echo -e ""
         #bash <(curl -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/AD/AD${ADN})
-        bash <(curl -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/AD/ADDV)
 	echo -e ""
         bash <(curl -s https://raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/reference/AD/AD2)
     fi
